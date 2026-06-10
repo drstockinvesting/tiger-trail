@@ -1,0 +1,14 @@
+# Claude Code session files
+.claude/
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# Editor
+.vscode/
+*.swp
+*~
+
+# Local server logs
+nohup.out
