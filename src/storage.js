@@ -10,6 +10,7 @@
       volume: 0.7,
       quality: 'high',
       maxTarget: 12,
+      gameStyle: 'competitive', // 'competitive' | 'casual'
     },
     // leaderboards: { multiples: [{name, score, date}], factors: [...] }
     leaderboards: { multiples: [], factors: [] },

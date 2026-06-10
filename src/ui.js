@@ -33,6 +33,16 @@
       modeBtns.forEach(b => b.addEventListener('click', () => { GameAudio.sfx.click(); selectMode(b.dataset.mode); }));
       selectMode('multiples');
 
+      // casual / competitive toggle (persisted)
+      const styleBtns = document.querySelectorAll('.btn-style');
+      const selectStyle = (st) => {
+        Storage.settings.gameStyle = st;
+        Storage.saveSettings();
+        styleBtns.forEach(b => b.classList.toggle('selected', b.dataset.style === st));
+      };
+      styleBtns.forEach(b => b.addEventListener('click', () => { GameAudio.sfx.click(); selectStyle(b.dataset.style); }));
+      selectStyle(Storage.settings.gameStyle || 'competitive');
+
       $('btn-start').addEventListener('click', () => { GameAudio.sfx.click(); this.startGame(); });
       $('btn-leaderboard').addEventListener('click', () => { GameAudio.sfx.click(); this.renderBoard(currentBoard); showScreen('leaderboard'); });
       $('btn-stats').addEventListener('click', () => { GameAudio.sfx.click(); this.renderStats(); showScreen('stats'); });
@@ -129,7 +139,9 @@
     },
     updateScore(score) { $('hud-score').textContent = score; },
     updateLives(lives) {
-      $('hud-lives').textContent = '❤️'.repeat(Math.max(0, lives)) + '🖤'.repeat(Math.max(0, 3 - lives));
+      $('hud-lives').textContent = lives === Infinity
+        ? '🌴' // casual: no lives to lose
+        : '❤️'.repeat(Math.max(0, lives)) + '🖤'.repeat(Math.max(0, 3 - lives));
     },
 
     showCountdown(v) {
@@ -214,14 +226,16 @@
     // ----- game over -----
     showGameOver(result) {
       pendingResult = result;
-      $('gameover-title').textContent = result.correct >= 15 ? '🌟 Great Run!' : 'Game Over';
+      $('gameover-title').textContent = result.casual
+        ? '🌴 Trail Complete!'
+        : (result.correct >= 15 ? '🌟 Great Run!' : 'Game Over');
       $('gameover-score').textContent = result.score;
       const acc = result.correct + result.wrong > 0
         ? Math.round((result.correct / (result.correct + result.wrong)) * 100) : 0;
       $('gameover-detail').innerHTML =
         `✅ ${result.correct} correct &nbsp; ❌ ${result.wrong} wrong &nbsp; ⚠️ ${result.missed || 0} missed &nbsp; (${acc}% accuracy)<br>` +
         `🔥 Best streak: ${result.bestStreak} &nbsp; 🏃 Distance: ${Math.round(result.distance)} m`;
-      const qualifies = Storage.qualifies(result.mode, result.score);
+      const qualifies = !result.casual && Storage.qualifies(result.mode, result.score);
       $('initials-entry').classList.toggle('hidden', !qualifies);
       $('gameover-buttons').classList.toggle('hidden', qualifies);
       if (qualifies) {

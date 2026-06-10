@@ -11,6 +11,7 @@
   const START_SPEED = 13;
   const MAX_SPEED = 30;
   const SPEED_RAMP = 0.22;      // units/sec^2
+  const CASUAL_SPEED = 11;      // casual style: constant speed, never ramps
   // round length (correct answers collected per target) lives in MathGen:
   // 8 for multiples, all factors up to a cap of 6 for factors mode
 
@@ -168,12 +169,13 @@
     // ===== run lifecycle =====
     startRun(mode) {
       this.mode = mode;
+      this.casual = Storage.settings.gameStyle === 'casual';
       this.score = 0;
       this.lives = 3;
       this.streak = 0;
       this.introT = 0;
       this.run = { correct: 0, wrong: 0, missed: 0, bestStreak: 0, distance: 0, targetsCleared: 0, livesLost: 0 };
-      this.speed = START_SPEED;
+      this.speed = this.casual ? CASUAL_SPEED : START_SPEED;
       this.lane = 1;
       this.tigerY = 0; this.velY = 0; this.airborne = false;
       this.invuln = 0;
@@ -194,7 +196,7 @@
 
       UI.updateTarget(MathGen.targetLabel(mode), '–'); // revealed by the intro card
       UI.updateScore(0);
-      UI.updateLives(3);
+      UI.updateLives(this.casual ? Infinity : 3);
 
       // countdown 3..2..1
       this.state = 'countdown';
@@ -202,14 +204,17 @@
       UI.showCountdown(3);
       if (Storage.settings.music) GameAudio.startMusic();
 
-      // achievement: both modes played
-      const played = JSON.parse(localStorage.getItem('tt_modes') || '{}');
-      played[mode] = true;
-      localStorage.setItem('tt_modes', JSON.stringify(played));
-      if (played.multiples && played.factors) this.unlock('both_modes');
+      // achievement: both modes played (competitive only)
+      if (!this.casual) {
+        const played = JSON.parse(localStorage.getItem('tt_modes') || '{}');
+        played[mode] = true;
+        localStorage.setItem('tt_modes', JSON.stringify(played));
+        if (played.multiples && played.factors) this.unlock('both_modes');
+      }
     }
 
     unlock(id) {
+      if (this.casual) return; // casual runs don't earn achievements
       const a = ACHIEVEMENTS.find(x => x.id === id);
       if (!a) return; // e.g. prime factor targets have no mastery badge
       if (Storage.unlock(id)) {
@@ -225,6 +230,7 @@
 
       const result = {
         mode: this.mode,
+        casual: this.casual,
         score: Math.floor(this.score),
         correct: this.run.correct,
         wrong: this.run.wrong,
@@ -233,7 +239,9 @@
         distance: this.run.distance,
         targetsCleared: this.run.targetsCleared,
       };
-      Storage.recordRun(result);
+      // casual runs are open-ended, so they don't count toward lifetime
+      // records (best score, distance) — answer stats still accumulate
+      if (!this.casual) Storage.recordRun(result);
 
       // run-end achievements
       this.unlock('first_run');
@@ -381,8 +389,8 @@
         if (this.streak === 10) this.unlock('streak_10');
         if (this.streak === 20) this.unlock('streak_20');
 
-        // cumulative fact mastery -> per-target achievements
-        const mastered = Storage.recordMastery(this.mode, this.target, o.value);
+        // cumulative fact mastery -> per-target achievements (competitive only)
+        const mastered = this.casual ? null : Storage.recordMastery(this.mode, this.target, o.value);
         if (mastered !== null) {
           const total = this.mode === 'multiples'
             ? 12
@@ -405,7 +413,8 @@
           : `${o.value} is not a factor of ${this.target}`;
         UI.scorePop(sp.x, sp.y, `✖ ${why}`, false);
         this.burst(o.group.position, 0xd84315);
-        this.loseLife();
+        if (this.casual) this.score = Math.max(0, this.score - 10); // points, not lives
+        else this.loseLife();
       }
       this.scene.remove(o.group);
       UI.updateScore(Math.floor(this.score));
@@ -442,6 +451,7 @@
     }
 
     loseLife() {
+      if (this.casual) return; // no lives in casual — crash feedback is enough
       this.lives--;
       this.run.livesLost++;
       UI.updateLives(this.lives);
@@ -476,9 +486,11 @@
     }
 
     tick(dt) {
-      // speed ramp
-      this.speed = Math.min(MAX_SPEED, this.speed + SPEED_RAMP * dt);
-      if (this.speed >= MAX_SPEED && !this.maxSpeedHit) { this.maxSpeedHit = true; this.unlock('max_speed'); }
+      // speed ramp (casual holds a calm, constant pace)
+      if (!this.casual) {
+        this.speed = Math.min(MAX_SPEED, this.speed + SPEED_RAMP * dt);
+        if (this.speed >= MAX_SPEED && !this.maxSpeedHit) { this.maxSpeedHit = true; this.unlock('max_speed'); }
+      }
       this.run.distance += this.speed * dt;
       if (this.invuln > 0) this.invuln -= dt;
 
@@ -520,8 +532,11 @@
         this.nextSpawnIn -= this.speed * dt;
         if (this.nextSpawnIn <= 0) {
           this.spawnWave();
-          // gap shrinks a bit as speed grows, keeps reaction time fair
-          this.nextSpawnIn = 19 + Math.random() * 8 + (this.speed - START_SPEED) * 0.35;
+          // gap shrinks a bit as speed grows, keeps reaction time fair;
+          // casual waves sit farther apart to leave room for thought
+          this.nextSpawnIn = this.casual
+            ? 31 + Math.random() * 8
+            : 19 + Math.random() * 8 + (this.speed - START_SPEED) * 0.35;
         }
       }
 

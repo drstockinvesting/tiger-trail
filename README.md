@@ -21,6 +21,15 @@ python3 -m http.server 8421
 - **Multiples** — collect coins that are multiples of the target number shown at the top.
 - **Factors** — collect coins that divide the target number evenly.
 
+Each mode plays in one of two styles, picked on the main menu:
+
+- **🏆 Competitive** — 3 lives, speed ramps up, scores reach the leaderboard
+  and unlock achievements.
+- **🌴 Casual** — a calm, constant pace with waves spaced farther apart for
+  thinking time. No lives: wrong answers cost 10 points instead, and the run
+  ends whenever the player presses ✖. Casual runs never touch the leaderboard,
+  achievements, or lifetime records (per-fact practice stats still accumulate).
+
 Wrong numbers are deliberately tricky near-misses (e.g. one more than a real
 multiple). Correct values draw from a shuffled deck (×1–×12 for multiples, all
 factors for factors mode) — a collected value never reappears in the round, but

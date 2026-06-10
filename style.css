@@ -126,6 +126,24 @@ h3 { color: var(--leaf); margin: 16px 0 8px; font-size: 1.05rem; text-align: lef
 .mode-name { font-size: 1.15rem; color: var(--banana); }
 .mode-desc { font-size: .72rem; font-weight: 400; opacity: .85; line-height: 1.25; }
 
+/* ===== Casual / Competitive toggle ===== */
+.style-row { display: flex; gap: 10px; margin-top: 10px; }
+.btn-style {
+  flex: 1;
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 9px 8px;
+  border-radius: 14px;
+  opacity: .7;
+}
+.btn-style.selected {
+  opacity: 1;
+  border-color: var(--banana);
+  background: var(--jungle-light);
+  box-shadow: 0 0 0 2px rgba(255,213,79,.3);
+}
+.style-name { font-size: .95rem; color: var(--banana); }
+.style-desc { font-size: .68rem; font-weight: 400; opacity: .85; line-height: 1.25; }
+
 .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
 
 /* ===== How to play ===== */
