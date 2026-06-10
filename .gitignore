@@ -12,3 +12,9 @@
 
 # Local server logs
 nohup.out
+
+# Desktop build artifacts (rebuild with: cd desktop && npm install && npm run build)
+desktop/node_modules/
+desktop/game/
+desktop/dist/
+desktop/icon.iconset/

@@ -1,0 +1,15 @@
+{
+  "name": "tiger-trail",
+  "productName": "Tiger Trail",
+  "version": "1.0.0",
+  "description": "Tiger Trail: Jungle Math Runner — desktop app",
+  "main": "main.js",
+  "scripts": {
+    "start": "node build.js --copy-only && electron .",
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.0.1",
+    "electron": "^42.4.0"
+  }
+}

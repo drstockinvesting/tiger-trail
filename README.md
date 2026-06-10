@@ -82,12 +82,27 @@ Tip: you can jump *over* a wrong number to avoid it.
 | `src/main.js` | Bootstrap |
 | `lib/three.min.js` | Three.js r149 (vendored, classic build so `file://` works) |
 
+## Mac desktop app
+
+The `desktop/` folder wraps the game in Electron as a universal (Apple
+Silicon + Intel) Mac app with a custom icon:
+
+```sh
+cd desktop
+npm install
+npm run build
+# → desktop/dist/Tiger Trail-darwin-universal/Tiger Trail.app
+```
+
+`npm start` runs the app without packaging. The build is unsigned, so on
+*other* Macs the first launch needs **right-click → Open** (one time only).
+
 ## Packaging for sale (next steps)
 
 The game is a static web bundle, so it wraps cleanly:
 
-- **Desktop app**: wrap with [Electron](https://www.electronjs.org/) or
-  [Tauri](https://tauri.app/) → sellable .app/.exe (Steam, itch.io, Gumroad).
+- **Desktop app**: the Electron wrapper in `desktop/` (above) → sellable .app
+  (Steam, itch.io, Gumroad). Add code signing/notarization before selling.
 - **Mobile app**: wrap with [Capacitor](https://capacitorjs.com/) → iOS App Store /
   Google Play. Touch controls and responsive layout are already implemented.
 - **Web**: host as-is and gate behind a license/purchase page (itch.io supports
