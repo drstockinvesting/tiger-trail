@@ -3,13 +3,44 @@
   "productName": "Tiger Trail",
   "version": "1.0.0",
   "description": "Tiger Trail: Jungle Math Runner — desktop app",
+  "author": "Dr. Cole",
   "main": "main.js",
   "scripts": {
+    "copy": "node build.js --copy-only",
     "start": "node build.js --copy-only && electron .",
-    "build": "node build.js"
+    "dist:mac": "node build.js --copy-only && electron-builder --mac",
+    "dist:win": "node build.js --copy-only && electron-builder --win",
+    "dist": "node build.js --copy-only && electron-builder --mac --win"
   },
   "devDependencies": {
-    "@electron/packager": "^20.0.1",
-    "electron": "^42.4.0"
+    "electron": "^42.4.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.drcole.tigertrail",
+    "productName": "Tiger Trail",
+    "copyright": "Copyright © 2026 Dr. Cole",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "game/**/*"
+    ],
+    "electronLanguages": ["en-US"],
+    "compression": "maximum",
+    "mac": {
+      "target": [
+        { "target": "dmg", "arch": "universal" },
+        { "target": "zip", "arch": "universal" }
+      ],
+      "category": "public.app-category.education",
+      "icon": "build/icon.png"
+    },
+    "win": {
+      "target": [{ "target": "zip", "arch": "x64" }],
+      "icon": "build/icon.png"
+    }
   }
 }

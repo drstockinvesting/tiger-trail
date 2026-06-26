@@ -5,6 +5,12 @@
 .DS_Store
 .AppleDouble
 
+# iCloud Drive sync-conflict copies (this repo lives in iCloud Drive, which
+# spawns "filename 2.ext" duplicates when files are written quickly, e.g. builds)
+* [0-9].*
+* [0-9]
+*.icloud
+
 # Editor
 .vscode/
 *.swp

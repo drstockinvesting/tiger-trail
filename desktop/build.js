@@ -1,7 +1,7 @@
-/* Builds the Mac app:
-   1. copies the game (index.html, style.css, src/, lib/) into desktop/game/
-   2. packages it with Electron into desktop/dist/
-   Run with `npm run build`; `--copy-only` just refreshes desktop/game/. */
+/* Copies the game (index.html, style.css, src/, lib/) into desktop/game/ so
+   Electron can load it. Packaging itself is done by electron-builder via the
+   npm scripts (dist:mac / dist:win / dist). Run standalone with:
+     node build.js --copy-only   (or `npm run copy`) */
 const fs = require('fs');
 const path = require('path');
 
@@ -17,25 +17,4 @@ function copyGame() {
   console.log('Game files copied into desktop/game/');
 }
 
-async function build() {
-  const { packager } = require('@electron/packager');
-  const icon = path.join(__dirname, 'icon.icns');
-  const out = await packager({
-    dir: __dirname,
-    name: 'Tiger Trail',
-    platform: 'darwin',
-    arch: 'universal',
-    out: path.join(__dirname, 'dist'),
-    overwrite: true,
-    icon: fs.existsSync(icon) ? icon : undefined,
-    appBundleId: 'com.drcole.tigertrail',
-    appCategoryType: 'public.app-category.education',
-    ignore: [/^\/dist($|\/)/, /^\/build\.js$/, /^\/icon\.(svg|icns)$/, /^\/icon\.iconset($|\/)/],
-  });
-  console.log('Packaged:', out.join(', '));
-}
-
 copyGame();
-if (!process.argv.includes('--copy-only')) {
-  build().catch((e) => { console.error(e); process.exit(1); });
-}

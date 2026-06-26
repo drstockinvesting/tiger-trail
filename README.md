@@ -82,28 +82,54 @@ Tip: you can jump *over* a wrong number to avoid it.
 | `src/main.js` | Bootstrap |
 | `lib/three.min.js` | Three.js r149 (vendored, classic build so `file://` works) |
 
-## Mac desktop app
+## Desktop app (Mac + Windows)
 
-The `desktop/` folder wraps the game in Electron as a universal (Apple
-Silicon + Intel) Mac app with a custom icon:
+The `desktop/` folder wraps the game in Electron and packages it with
+[electron-builder](https://www.electron.build/). One config builds a **universal**
+Mac app (Intel + Apple Silicon in a single download) and a Windows build, both
+with the custom tiger icon. The game files are copied in automatically from the
+repo root — no game-code changes.
 
 ```sh
 cd desktop
 npm install
-npm run build
-# → desktop/dist/Tiger Trail-darwin-universal/Tiger Trail.app
+npm run dist:mac    # → desktop/dist/  (.dmg + .zip, universal)
+npm run dist:win    # → desktop/dist/  (Windows .zip)
+npm run dist        # both at once
 ```
 
-`npm start` runs the app without packaging. The build is unsigned, so on
-*other* Macs the first launch needs **right-click → Open** (one time only).
+`npm start` runs the app unpackaged for quick testing.
 
-## Packaging for sale (next steps)
+**First launch on other Macs:** the build is unsigned (signing needs a $99/yr
+Apple Developer account), so macOS Gatekeeper blocks a plain double-click the
+first time — **right-click → Open → Open** (once per machine), or launch it
+through the itch.io app, which bypasses Gatekeeper.
 
-The game is a static web bundle, so it wraps cleanly:
+**Windows installer note:** a polished `.exe` installer (NSIS) requires Wine when
+built on a Mac, so this config ships a portable Windows **`.zip`** (works on
+itch.io as-is). For a real installer, either `brew install --cask wine-stable`
+and add an `nsis` target, or build on a Windows machine / GitHub Actions runner.
 
-- **Desktop app**: the Electron wrapper in `desktop/` (above) → sellable .app
-  (Steam, itch.io, Gumroad). Add code signing/notarization before selling.
-- **Mobile app**: wrap with [Capacitor](https://capacitorjs.com/) → iOS App Store /
-  Google Play. Touch controls and responsive layout are already implemented.
-- **Web**: host as-is and gate behind a license/purchase page (itch.io supports
-  HTML5 games directly).
+### Selling on itch.io
+
+itch.io gates the download behind payment automatically — no license code in the
+game itself.
+
+1. Create an account → **Dashboard → Create new project**.
+2. Kind: **Downloadable**; Pricing: **Paid**, set a minimum price.
+3. Upload `desktop/dist/Tiger Trail-<version>-universal.dmg` (or the Mac `.zip`)
+   and the Windows `.zip`; mark each upload with its platform so itch shows the
+   right download to each visitor.
+4. For updates, install [butler](https://itch.io/docs/butler/) and:
+   `butler push "desktop/dist/<file>" <user>/tiger-trail:mac` (and `:windows`).
+
+## Other platforms (roadmap)
+
+Same self-contained `game/` bundle, one wrapper at a time:
+
+- **Web / PWA** → Chromebooks + any browser. Host as-is behind an itch.io or
+  site paywall; add a manifest to make it installable.
+- **Android** ([Capacitor](https://capacitorjs.com/)) → Google Play; also runs
+  on most Chromebooks.
+- **iOS** (Capacitor) → Apple App Store. Touch controls and responsive layout
+  are already implemented.
