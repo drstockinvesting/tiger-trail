@@ -11,7 +11,7 @@ const GAME = path.join(__dirname, 'game');
 function copyGame() {
   fs.rmSync(GAME, { recursive: true, force: true });
   fs.mkdirSync(GAME);
-  for (const item of ['index.html', 'style.css', 'src', 'lib']) {
+  for (const item of ['index.html', 'style.css', 'src', 'lib', 'manifest.webmanifest', 'icons']) {
     fs.cpSync(path.join(ROOT, item), path.join(GAME, item), { recursive: true });
   }
   console.log('Game files copied into desktop/game/');

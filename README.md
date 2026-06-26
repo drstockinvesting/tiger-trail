@@ -123,12 +123,38 @@ game itself.
 4. For updates, install [butler](https://itch.io/docs/butler/) and:
    `butler push "desktop/dist/<file>" <user>/tiger-trail:mac` (and `:windows`).
 
-## Other platforms (roadmap)
+## Web / PWA build (Chromebooks + any browser)
 
-Same self-contained `game/` bundle, one wrapper at a time:
+The game ships as an installable, **offline-capable Progressive Web App**. A
+[`manifest.webmanifest`](manifest.webmanifest) + service worker
+([`sw.js`](sw.js)) precache every asset (~252 KB total), so after the first load
+it runs with no network — and browsers offer an **Install** button to add it to
+the home screen / shelf like a native app. This is the build for **Chromebooks**
+and reaches every other browser as a bonus.
 
-- **Web / PWA** → Chromebooks + any browser. Host as-is behind an itch.io or
-  site paywall; add a manifest to make it installable.
+The service worker only activates over `http(s)`; on `file://` (double-click) and
+inside the Electron app it's silently skipped, so those keep working unchanged.
+
+```sh
+./build-web.sh        # → web-dist/tiger-trail-web.zip (index.html at the root)
+```
+
+**Selling / hosting:**
+
+- **itch.io (HTML5):** create a project → Kind **HTML5**, upload
+  `tiger-trail-web.zip`, tick *"This file will be played in the browser"*, set
+  the viewport, and price it **Paid** — itch plays it in-browser only after
+  purchase. (Note: inside itch's player the "install to home screen" prompt is
+  limited; full PWA install works best when self-hosted.)
+- **Your own site / Netlify / any static host:** unzip onto the host over HTTPS.
+  Visitors get the **Install** button and full offline play. Gate access behind a
+  Stripe/Gumroad purchase + download link for selling.
+- **Free demo:** the same files can go on GitHub Pages (public, not paywalled).
+
+## Mobile builds (roadmap)
+
+Same self-contained bundle, one wrapper at a time:
+
 - **Android** ([Capacitor](https://capacitorjs.com/)) → Google Play; also runs
   on most Chromebooks.
 - **iOS** (Capacitor) → Apple App Store. Touch controls and responsive layout

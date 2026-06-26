@@ -21,6 +21,14 @@
     if (e.key === 'Enter') document.getElementById('btn-save-score').click();
   });
 
+  // Register the service worker for offline play + PWA install. Only runs when
+  // served over http(s); silently skipped on file:// (double-click) and Electron.
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => { /* offline mode unavailable; game still works */ });
+    });
+  }
+
   // Keep the page from scrolling/zooming on mobile.
   document.addEventListener('touchmove', (e) => {
     if (e.target.closest('.menu-panel')) return; // allow scrolling inside panels

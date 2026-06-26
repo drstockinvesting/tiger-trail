@@ -24,3 +24,6 @@ desktop/node_modules/
 desktop/game/
 desktop/dist/
 desktop/icon.iconset/
+
+# Web build artifact (rebuild with: ./build-web.sh)
+web-dist/
