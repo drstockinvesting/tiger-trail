@@ -7,8 +7,9 @@ const path = require('path');
 const MANIFEST = path.join(__dirname, 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
 
 if (!fs.existsSync(MANIFEST)) {
-  console.error('AndroidManifest.xml not found — run `npx cap add android` first.');
-  process.exit(1);
+  // No Android platform present (e.g. an iOS-only sync) — nothing to patch.
+  console.log('No Android project found — skipping Android manifest patch.');
+  process.exit(0);
 }
 
 let xml = fs.readFileSync(MANIFEST, 'utf8');

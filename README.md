@@ -179,10 +179,32 @@ builds then reuse it.
 Local build is also possible (`cd mobile && npm install && npm run add:android`,
 then open `android/` in Android Studio) but requires the Android SDK + JDK.
 
-## iOS (requires a paid Apple account)
+## iOS build (Mac + Xcode required)
 
-iOS is **not buildable without the $99/year Apple Developer Program** — Apple
-requires it to produce any installable/distributable app, and a build machine
-needs full Xcode. The same `mobile/` Capacitor project will target iOS
-(`npx cap add ios`) once that account and Xcode are in place. Touch controls and
-responsive layout are already implemented.
+The same `mobile/` Capacitor project targets iOS, and the game is verified
+running on the iOS Simulator (Three.js/WebGL, audio, touch, and localStorage all
+work under iOS WebKit). Building needs full **Xcode** and **CocoaPods**.
+
+```sh
+cd mobile
+npm install
+npm run add:ios            # scaffolds ios/ and runs pod install
+# build + run in the iOS Simulator (no Apple account, no signing):
+xcodebuild -workspace ios/App/App.xcworkspace -scheme App \
+  -configuration Debug -sdk iphonesimulator \
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
+  CODE_SIGNING_ALLOWED=NO build
+```
+
+> CocoaPods here was installed at user level for the system Ruby 2.6; if `pod`
+> isn't found, add it to PATH: `export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"`.
+
+**Run on your own iPhone (free Apple ID, 7-day):** open
+`mobile/ios/App/App.xcworkspace` in Xcode → select the **App** target →
+**Signing & Capabilities** → pick your personal team → connect your iPhone and
+press Run. The app expires after 7 days and **cannot be sold or shared** this way.
+
+**Selling on the App Store requires the $99/year Apple Developer Program.** With
+it, you archive the same project (Product → Archive) and upload to App Store
+Connect / TestFlight. That paid enrollment is the only remaining gate — the build
+itself is ready.
