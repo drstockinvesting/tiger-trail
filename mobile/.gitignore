@@ -1,0 +1,10 @@
+# Capacitor build artifacts — regenerated in CI / locally
+node_modules/
+www/
+android/
+ios/
+
+# signing material / generated credentials (never commit)
+*.jks
+*.keystore
+keystore-*.txt

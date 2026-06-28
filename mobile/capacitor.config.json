@@ -1,0 +1,8 @@
+{
+  "appId": "com.drcole.tigertrail",
+  "appName": "Tiger Trail",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#0d2b13"
+  }
+}

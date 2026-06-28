@@ -1,0 +1,19 @@
+{
+  "name": "tiger-trail-mobile",
+  "version": "1.0.0",
+  "description": "Capacitor wrapper for Tiger Trail (Android)",
+  "private": true,
+  "scripts": {
+    "copy-web": "node copy-web.js",
+    "add:android": "node copy-web.js && npx cap add android && node patch-android.js",
+    "sync": "node copy-web.js && npx cap sync android && node patch-android.js"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.2.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  }
+}

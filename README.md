@@ -151,11 +151,38 @@ inside the Electron app it's silently skipped, so those keep working unchanged.
   Stripe/Gumroad purchase + download link for selling.
 - **Free demo:** the same files can go on GitHub Pages (public, not paywalled).
 
-## Mobile builds (roadmap)
+## Android build (no Google Play account needed)
 
-Same self-contained bundle, one wrapper at a time:
+The `mobile/` folder wraps the game with [Capacitor](https://capacitorjs.com/),
+and a GitHub Actions workflow ([`.github/workflows/android.yml`](.github/workflows/android.yml))
+builds a **signed, installable APK in the cloud** — no local Android toolchain
+and no Play Store account required. The APK can be sold as a direct download
+(e.g. on itch.io) and sideloaded; it also runs on most Chromebooks. (The $25
+Google Play account is only needed to *list* on the Play Store.)
 
-- **Android** ([Capacitor](https://capacitorjs.com/)) → Google Play; also runs
-  on most Chromebooks.
-- **iOS** (Capacitor) → Apple App Store. Touch controls and responsive layout
-  are already implemented.
+**Build it:**
+
+1. Push to `main` (or run the workflow manually: GitHub → **Actions → Build
+   Android APK → Run workflow**).
+2. Open the finished run → **Artifacts → `tiger-trail-android`** → download.
+   It contains `Tiger-Trail.apk`.
+3. Sell/distribute the APK. On a device, enable "install unknown apps" to
+   sideload it.
+
+**Signing:** by default the workflow generates a one-off keystore per run and
+includes it (plus credentials) in the artifact. To ship **updates** that install
+over an existing copy, the APK must keep the same key — save that keystore once
+and add these repo secrets (GitHub → Settings → Secrets → Actions):
+`KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`. Subsequent
+builds then reuse it.
+
+Local build is also possible (`cd mobile && npm install && npm run add:android`,
+then open `android/` in Android Studio) but requires the Android SDK + JDK.
+
+## iOS (requires a paid Apple account)
+
+iOS is **not buildable without the $99/year Apple Developer Program** — Apple
+requires it to produce any installable/distributable app, and a build machine
+needs full Xcode. The same `mobile/` Capacitor project will target iOS
+(`npx cap add ios`) once that account and Xcode are in place. Touch controls and
+responsive layout are already implemented.
